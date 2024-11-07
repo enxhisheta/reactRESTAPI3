@@ -22,6 +22,8 @@ const Table = () => {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  const renderHeader = () => <h2>{isAlbumView ? "Albums" : "Posts"}</h2>;
+
   const renderTableHeaders = () => (
     <tr>
       {isAlbumView ? (
@@ -32,9 +34,10 @@ const Table = () => {
         </>
       ) : (
         <>
-          <th>Title</th>
-          <th>Author</th>
-          <th>First Published</th>
+          <th>User ID</th>
+          <th>Post Title</th>
+          <th>Post Details</th>
+          <th>Post Body</th>
         </>
       )}
     </tr>
@@ -50,11 +53,12 @@ const Table = () => {
         </tr>
       ));
     } else {
-      return data.map((book) => (
-        <tr key={book.key}>
-          <td>{book.title}</td>
-          <td>{book.author_name?.[0]}</td>
-          <td>{book.first_publish_year}</td>
+      return data.map((post) => (
+        <tr key={post.id}>
+          <td>{post.userId}</td>
+          <td>{post.id}</td>
+          <td>{post.title}</td>
+          <td>{post.body}</td>
         </tr>
       ));
     }
@@ -62,6 +66,7 @@ const Table = () => {
 
   return (
     <div>
+      {renderHeader()}
       <ToggleSwitch isAlbumView={isAlbumView} onToggle={handleToggle} />
       <table className="language-table">
         <thead>{renderTableHeaders()}</thead>

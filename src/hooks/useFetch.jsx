@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const API_URL_ALBUMS = "https://jsonplaceholder.typicode.com/albums";
-const API_URL_BOOKS = "https://openlibrary.org/search.json";
+const API_URL_POSTS = "https://jsonplaceholder.typicode.com/posts";
 
 const useFetch = (currentPage, itemsPerPage, isAlbumView) => {
   const [data, setData] = useState([]);
@@ -13,28 +13,24 @@ const useFetch = (currentPage, itemsPerPage, isAlbumView) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        if (isAlbumView) {
-          const response = await fetch(
-            `${API_URL_ALBUMS}?_page=${currentPage}&_limit=${itemsPerPage}`
-          );
-          if (!response.ok) throw new Error("Failed to fetch albums");
+        const apiUrl = isAlbumView ? API_URL_ALBUMS : API_URL_POSTS;
+        const response = await fetch(
+          `${apiUrl}?_page=${currentPage}&_limit=${itemsPerPage}`
+        );
 
-          const totalItems = response.headers.get("x-total-count");
-          setTotalPages(Math.ceil(totalItems / itemsPerPage));
-          const result = await response.json();
-          setData(result);
-        } else {
-          const response = await fetch(
-            `${API_URL_BOOKS}?q=crime&fields=key,title,author_name,first_publish_year&limit=${itemsPerPage}&page=${currentPage}&sort=new`
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch ${isAlbumView ? "albums" : "posts"}`
           );
-          if (!response.ok) throw new Error("Failed to fetch books");
-
-          const result = await response.json();
-          setData(result.docs);
-          setTotalPages(Math.ceil(result.numFound / itemsPerPage));
         }
-      } catch (err) {
-        setError(err.message);
+
+        const totalItems = response.headers.get("x-total-count");
+        setTotalPages(Math.ceil(totalItems / itemsPerPage));
+
+        const result = await response.json();
+        setData(result);
+      } catch (error) {
+        setError(error.message);
         setData([]);
       } finally {
         setLoading(false);

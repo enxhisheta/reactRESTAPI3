@@ -6,7 +6,7 @@ const ToggleApi = ({ isAlbumView, onToggle }) => {
         <input type="checkbox" checked={isAlbumView} onChange={onToggle} />
         <span className="slider round"></span>
       </label>
-      <span>{isAlbumView ? "Albums View" : "Books View"}</span>
+      <span>{isAlbumView ? "Albums View" : "Posts View"}</span>
     </div>
   );
 };
