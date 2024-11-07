@@ -1,52 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Pagination from "./Paginations";
-
-const API_URL_ALBUMS = "https://jsonplaceholder.typicode.com/albums";
-const API_URL_BOOKS = "https://openlibrary.org/search.json";
+import ToggleSwitch from "./ToggleApi";
+import useFetch from "../hooks/useFetch";
 
 const Table = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAlbumView, setIsAlbumView] = useState(true);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [totalPages, setTotalPages] = useState(0);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        if (isAlbumView) {
-          const response = await fetch(
-            `${API_URL_ALBUMS}?_page=${currentPage}&_limit=${itemsPerPage}`
-          );
-          if (!response.ok) throw new Error("Failed to fetch albums");
+  const { data, loading, error, totalPages } = useFetch(
+    currentPage,
+    itemsPerPage,
+    isAlbumView
+  );
 
-          const totalItems = response.headers.get("x-total-count");
-          setTotalPages(Math.ceil(totalItems / itemsPerPage));
-          const result = await response.json();
-          setData(result);
-        } else {
-          const response = await fetch(
-            `${API_URL_BOOKS}?q=crime&fields=key,title,author_name,first_publish_year&limit=${itemsPerPage}&page=${currentPage}&sort=new`
-          );
-          if (!response.ok) throw new Error("Failed to fetch books");
-
-          const result = await response.json();
-          setData(result.docs);
-          setTotalPages(Math.ceil(result.numFound / itemsPerPage));
-        }
-      } catch (err) {
-        setError(err.message);
-        setData([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [currentPage, isAlbumView]);
+  const handleToggle = () => {
+    setIsAlbumView(!isAlbumView);
+    setCurrentPage(1);
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -91,26 +62,11 @@ const Table = () => {
 
   return (
     <div>
-      <div className="toggle-container">
-        <label className="switch">
-          <input
-            type="checkbox"
-            checked={isAlbumView}
-            onChange={() => {
-              setIsAlbumView(!isAlbumView);
-              setCurrentPage(1);
-            }}
-          />
-          <span className="slider round"></span>
-        </label>
-        <span>{isAlbumView ? "Albums View" : "Books View"}</span>
-      </div>
-
+      <ToggleSwitch isAlbumView={isAlbumView} onToggle={handleToggle} />
       <table className="language-table">
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>
       </table>
-
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
