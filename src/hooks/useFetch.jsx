@@ -32,6 +32,7 @@ const useFetch = (currentPage, itemsPerPage, isAlbumView) => {
         setData(result);
       } catch (error) {
         setError(error.message);
+        console.log(error);
         setData([]);
       } finally {
         setLoading(false);
