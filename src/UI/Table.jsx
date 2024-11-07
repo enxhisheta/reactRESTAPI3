@@ -16,9 +16,10 @@ const Table = () => {
     isAlbumView
   );
 
-  const handleToggle = (event, newValue) => {
-    if (newValue !== null) {
-      setIsAlbumView(newValue);
+  const handleToggle = (newValue) => {
+    console.log(newValue);
+    if (newValue.target.value !== null) {
+      setIsAlbumView(newValue.target.value);
       setCurrentPage(1);
     }
   };
@@ -82,6 +83,9 @@ const Table = () => {
         sx={{
           "& .MuiToggleButton-root": {
             color: "white",
+          },
+          "& .MuiToggleButtonGroup-clicked": {
+            color: "purple",
           },
         }}
       >
