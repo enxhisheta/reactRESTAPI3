@@ -13,14 +13,15 @@ const useFetch = (currentPage, itemsPerPage, isAlbumView) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const apiUrl = isAlbumView ? API_URL_ALBUMS : API_URL_POSTS;
+        const apiUrl =
+          isAlbumView === "albums" ? API_URL_ALBUMS : API_URL_POSTS;
         const response = await fetch(
           `${apiUrl}?_page=${currentPage}&_limit=${itemsPerPage}`
         );
 
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch ${isAlbumView ? "albums" : "posts"}`
+            `Failed to fetch ${isAlbumView === "albums" ? "albums" : "posts"}`
           );
         }
 

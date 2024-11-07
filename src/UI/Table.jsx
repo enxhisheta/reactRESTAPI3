@@ -1,11 +1,13 @@
 import { useState } from "react";
 import Pagination from "./Paginations";
-import ToggleSwitch from "./ToggleApi";
+// import ToggleSwitch from "./ToggleApi";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import useFetch from "../hooks/useFetch";
 
 const Table = () => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [isAlbumView, setIsAlbumView] = useState(true);
+  const [isAlbumView, setIsAlbumView] = useState("albums");
   const itemsPerPage = 10;
 
   const { data, loading, error, totalPages } = useFetch(
@@ -14,19 +16,23 @@ const Table = () => {
     isAlbumView
   );
 
-  const handleToggle = () => {
-    setIsAlbumView(!isAlbumView);
-    setCurrentPage(1);
+  const handleToggle = (event, newValue) => {
+    if (newValue !== null) {
+      setIsAlbumView(newValue);
+      setCurrentPage(1);
+    }
   };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
-  const renderHeader = () => <h2>{isAlbumView ? "Albums" : "Posts"}</h2>;
+  const renderHeader = () => (
+    <h2>{isAlbumView === "albums" ? "Albums" : "Posts"}</h2>
+  );
 
   const renderTableHeaders = () => (
     <tr>
-      {isAlbumView ? (
+      {isAlbumView === "albums" ? (
         <>
           <th>User ID</th>
           <th>Album ID</th>
@@ -44,7 +50,7 @@ const Table = () => {
   );
 
   const renderTableRows = () => {
-    if (isAlbumView) {
+    if (isAlbumView === "albums") {
       return data.map((album) => (
         <tr key={album.id}>
           <td>{album.userId}</td>
@@ -67,7 +73,22 @@ const Table = () => {
   return (
     <div>
       {renderHeader()}
-      <ToggleSwitch isAlbumView={isAlbumView} onToggle={handleToggle} />
+      {/* <ToggleSwitch isAlbumView={isAlbumView} onToggle={handleToggle} /> */}
+      <ToggleButtonGroup
+        value={isAlbumView}
+        exclusive
+        onChange={handleToggle}
+        aria-label="table"
+        sx={{
+          "& .MuiToggleButton-root": {
+            color: "white",
+          },
+        }}
+      >
+        <ToggleButton value="albums">Albums</ToggleButton>
+        <ToggleButton value="posts">Posts</ToggleButton>
+      </ToggleButtonGroup>
+
       <table className="language-table">
         <thead>{renderTableHeaders()}</thead>
         <tbody>{renderTableRows()}</tbody>
